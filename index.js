@@ -69,7 +69,7 @@ Toolkit.run(async tools => {
     require('fs').writeFileSync('/tmp/key', process.env.DEPLOY_KEY);
     await tools.runInWorkspace('git', ['config', 'core.sshCommand', '"ssh -i /tmp/key"']);
 //    const remoteRepo = `https://${process.env.GITHUB_ACTOR}:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
-    const remoteRepo = `git://git@github.com:${process.env.GITHUB_REPOSITORY}.git`
+    const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo]);
     // console.log(Buffer.from(remoteRepo).toString('base64'))
     await tools.runInWorkspace('git', ['tag', newVersion])
