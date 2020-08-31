@@ -15,7 +15,7 @@ Toolkit.run(async tools => {
   if (!event.commits) {
     console.log("Couldn't find any commits in this event, incrementing patch version...")
   }
-  
+
   const messages = event.commits ? event.commits.map(commit => commit.message + '\n' + commit.body) : []
 
   const commitMessage = 'version bump to'
@@ -66,8 +66,10 @@ Toolkit.run(async tools => {
         'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"')
     }
 
+    require('fs').writeFileSync('/tmp/key', process.env.DEPLOY_KEY);
+    await tools.runInWorkspace('git', ['config', 'core.sshCommand', '"ssh -i /tmp/key"']);
 //    const remoteRepo = `https://${process.env.GITHUB_ACTOR}:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
-    const remoteRepo = `https://${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
+    const remoteRepo = `git://git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo]);
     // console.log(Buffer.from(remoteRepo).toString('base64'))
     await tools.runInWorkspace('git', ['tag', newVersion])
