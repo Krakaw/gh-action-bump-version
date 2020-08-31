@@ -1,6 +1,6 @@
 const { Toolkit } = require('actions-toolkit')
 const { execSync } = require('child_process')
-
+const fs = require('fs');
 // Change working directory if user defined PACKAGEJSON_DIR
 if (process.env.PACKAGEJSON_DIR) {
   process.env.GITHUB_WORKSPACE = `${process.env.GITHUB_WORKSPACE}/${process.env.PACKAGEJSON_DIR}`
@@ -66,8 +66,9 @@ Toolkit.run(async tools => {
         'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"')
     }
 
-    require('fs').writeFileSync('/tmp/key', process.env.DEPLOY_KEY);
-    await tools.runInWorkspace('git', ['config', 'core.sshCommand', '"ssh -i /tmp/key"']);
+    const tmpKey = execSync(`mktemp`).toString().trim();
+    fs.writeFileSync(tmpKey, process.env.DEPLOY_KEY);
+    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `"ssh -i ${tmpKey}"`]);
 //    const remoteRepo = `https://${process.env.GITHUB_ACTOR}:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo]);
