@@ -66,11 +66,6 @@ Toolkit.run(async tools => {
         'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"')
     }
 
-    const home = execSync(`mkdir ~/.ssh && chmod 700 ~/.ssh && cd ~/.ssh/ && pwd`).toString().trim()
-    fs.writeFileSync(`${home}/id_rsa_deploy`, process.env.DEPLOY_PRIVATE_KEY)
-    execSync(`chmod 600 ~/.ssh/id_rsa_deploy`)
-    await tools.runInWorkspace('ssh', ['-T', '-v', '-o', 'StrictHostKeyChecking=no', '-i', `${home}/id_rsa_deploy`, 'git@github.com'])
-    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -o StrictHostKeyChecking=no -i ${home}/id_rsa_deploy`])
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
