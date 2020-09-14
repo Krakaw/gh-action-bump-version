@@ -69,12 +69,12 @@ Toolkit.run(async tools => {
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
-    const pushOptions = ['push', '--follow-tags']
+    const pushOptions = ['push', 'origin', '--follow-tags']
     if (process.env.FORCE_PUSH) {
       pushOptions.push('--force')
     }
     await tools.runInWorkspace('git', pushOptions)
-    await tools.runInWorkspace('git', ['push', '--tags'])
+    await tools.runInWorkspace('git', ['push', 'origin', '--tags'])
   } catch (e) {
     tools.log.fatal(e)
     tools.exit.failure('Failed to bump version')
