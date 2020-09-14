@@ -71,7 +71,7 @@ Toolkit.run(async tools => {
     fs.writeFileSync(`${home}/id_rsa`, process.env.DEPLOY_PRIVATE_KEY);
     execSync(`chmod 600 ~/.ssh/id_rsa`);
     // execSync(`eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa`);
-    await tools.runInWorkspace('ssh', ['-T', 'git@github.com]);
+    await tools.runInWorkspace('ssh', ['-T', 'git@github.com']);
     await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -o StrictHostKeyChecking=no`]);
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo]);
