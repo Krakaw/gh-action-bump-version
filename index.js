@@ -66,13 +66,13 @@ Toolkit.run(async tools => {
         'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"')
     }
 
-    const tmpKey = execSync(`mktemp`).toString().trim();
-    fs.writeFileSync(tmpKey, process.env.DEPLOY_PRIVATE_KEY);
-    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -i ${tmpKey} -o StrictHostKeyChecking=no`]);
-//    const remoteRepo = `https://${process.env.GITHUB_ACTOR}:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
+    const home = execSync(`mkdir ~/.ssh && chmod 700 ~/.ssh && cd ~/.ssh/ && pwd`).toString().trim();
+    fs.writeFileSync(`${home}/id_rsa`, process.env.DEPLOY_PRIVATE_KEY);
+    execSync(`chmod 600 ~/.ssh/id_rsa`);
+    execSync(`eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa`);
+    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -o StrictHostKeyChecking=no`]);
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo]);
-    // console.log(Buffer.from(remoteRepo).toString('base64'))
     await tools.runInWorkspace('git', ['tag', newVersion])
     const pushOptions = ['push', '--follow-tags'];
     if (process.env.FORCE_PUSH) {
