@@ -1,6 +1,6 @@
 const { Toolkit } = require('actions-toolkit')
 const { execSync } = require('child_process')
-const fs = require('fs');
+const fs = require('fs')
 // Change working directory if user defined PACKAGEJSON_DIR
 if (process.env.PACKAGEJSON_DIR) {
   process.env.GITHUB_WORKSPACE = `${process.env.GITHUB_WORKSPACE}/${process.env.PACKAGEJSON_DIR}`
@@ -13,7 +13,7 @@ Toolkit.run(async tools => {
   const event = tools.context.payload
 
   if (!event.commits) {
-    console.log("Couldn't find any commits in this event, incrementing patch version...")
+    console.log('Couldn\'t find any commits in this event, incrementing patch version...')
   }
 
   const messages = event.commits ? event.commits.map(commit => commit.message + '\n' + commit.body) : []
@@ -66,19 +66,19 @@ Toolkit.run(async tools => {
         'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"')
     }
 
-    const home = execSync(`mkdir ~/.ssh && chmod 700 ~/.ssh && cd ~/.ssh/ && pwd`).toString().trim();
-    console.log(home);
-    fs.writeFileSync(`${home}/id_rsa`, process.env.DEPLOY_PRIVATE_KEY);
-    execSync(`chmod 600 ~/.ssh/id_rsa`);
+    const home = execSync(`mkdir ~/.ssh && chmod 700 ~/.ssh && cd ~/.ssh/ && pwd`).toString().trim()
+    console.log(home)
+    fs.writeFileSync(`${home}/id_rsa`, process.env.DEPLOY_PRIVATE_KEY)
+    execSync(`chmod 600 ~/.ssh/id_rsa`)
     // execSync(`eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa`);
-    await tools.runInWorkspace('ssh', ['-T', 'git@github.com']);
-    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -o StrictHostKeyChecking=no`]);
+    await tools.runInWorkspace('ssh', ['-T', '-o', 'StrictHostKeyChecking=no', 'git@github.com'])
+    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -o StrictHostKeyChecking=no`])
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
-    await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo]);
+    await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
-    const pushOptions = ['push', '--follow-tags'];
+    const pushOptions = ['push', '--follow-tags']
     if (process.env.FORCE_PUSH) {
-      pushOptions.push('--force');
+      pushOptions.push('--force')
     }
     await tools.runInWorkspace('git', pushOptions)
     await tools.runInWorkspace('git', ['push', '--tags'])
