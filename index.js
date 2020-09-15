@@ -72,13 +72,6 @@ Toolkit.run(async tools => {
     fs.writeFileSync(keyPath, process.env.DEPLOY_PRIVATE_KEY)
     execSync(`chmod 600 ${keyPath}`)
 
-    try {
-      console.log(execSync(`md5 ${keyPath}`).toString())
-      console.log(execSync(`ssh -v -i ${keyPath} -o "StrictHostKeyChecking=no" -T git@github.com`).toString())
-    } catch (e) {
-      console.log(e)
-    }
-
     await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -v -i ${keyPath} -o "StrictHostKeyChecking=no"`])
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
