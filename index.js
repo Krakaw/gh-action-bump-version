@@ -67,8 +67,10 @@ Toolkit.run(async tools => {
     }
 
     const remoteRepo = `git@github.com:${process.env.GITHUB_REPOSITORY}.git`
-    console.log(`Repo`, remoteRepo)
-    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -i ~/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no`])
+    const home = execSync('cd ~ && pwd').toString().trim()
+    const keyPath = `${home}/id_rsa_deploy`;
+    fs.writeFileSync(keyPath, process.env.DEPLOY_PRIVATE_KEY);
+    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -i ${keyPath} -o StrictHostKeyChecking=no`])
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
     const pushOptions = ['push', 'origin', '--follow-tags']
