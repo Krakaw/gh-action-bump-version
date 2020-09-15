@@ -71,6 +71,7 @@ Toolkit.run(async tools => {
     const keyPath = `${home}/id_rsa_deploy`
     fs.writeFileSync(keyPath, process.env.DEPLOY_PRIVATE_KEY)
     execSync(`chmod 600 ${keyPath}`)
+    console.log(execSync(`ssh -v -T -i ${keyPath} -o StrictHostKeyChecking=no git@github.com`).toString())
     await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -i ${keyPath} -o StrictHostKeyChecking=no`])
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
