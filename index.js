@@ -73,12 +73,12 @@ Toolkit.run(async tools => {
     execSync(`chmod 600 ${keyPath}`)
     console.log(execSync(`ls -la ${keyPath}; wc ${keyPath}`).toString())
     try {
-      console.log(execSync(`ssh -v -i ${keyPath} -o StrictHostKeyChecking=no -T git@github.com`).toString())
+      console.log(execSync(`ssh -v -i ${keyPath} -o "StrictHostKeyChecking=no" -T git@github.com`).toString())
     } catch (e) {
       console.log(e)
     }
 
-    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -v -i ${keyPath} -o StrictHostKeyChecking=no`])
+    await tools.runInWorkspace('git', ['config', 'core.sshCommand', `ssh -v -i ${keyPath} -o "StrictHostKeyChecking=no"`])
     await tools.runInWorkspace('git', ['remote', 'set-url', 'origin', remoteRepo])
     await tools.runInWorkspace('git', ['tag', newVersion])
     const pushOptions = ['push', '--follow-tags']
