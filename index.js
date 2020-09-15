@@ -71,8 +71,9 @@ Toolkit.run(async tools => {
     const keyPath = `${home}/id_rsa_deploy`
     fs.writeFileSync(keyPath, process.env.DEPLOY_PRIVATE_KEY)
     execSync(`chmod 600 ${keyPath}`)
-    console.log(execSync(`ls -la ${keyPath}; wc ${keyPath}`).toString())
+
     try {
+      console.log(execSync(`md5 ${keyPath}`).toString())
       console.log(execSync(`ssh -v -i ${keyPath} -o "StrictHostKeyChecking=no" -T git@github.com`).toString())
     } catch (e) {
       console.log(e)
