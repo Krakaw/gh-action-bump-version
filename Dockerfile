@@ -8,7 +8,7 @@
 #
 # You can specify a version:
 # FROM node:10-slim
-FROM node:slim
+FROM node:12-slim
 
 # Labels for GitHub to read your action
 LABEL "com.github.actions.name"="Automated version bump for npm packages."
@@ -25,7 +25,7 @@ COPY package*.json ./
 RUN apt-get update
 RUN apt-get -y install git ssh
 
-RUN npm install --only=production
+RUN npm ci --only=production
 
 
 # Copy the rest of your action's code
